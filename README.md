@@ -1,107 +1,49 @@
-# SMOKE: Single-Stage Monocular 3D Object Detection via Keypoint Estimation
+Result: time 232s frames 7518  32 FPS 30 ms per frame
+Accuracy: 
+  
+#Note:
+https://github.com/lzccccc/SMOKE
 
-<img align="center" src="figures/animation.gif" width="750">
 
-[Video](https://www.youtube.com/watch?v=pvM_bASOQmo)
+#install
+conda activate py37 (specific version required)
+conda install pytorch=1.3.1  cudatoolkit=10.0 -c pytorch (specific version required)
+pip install yacs
+pip install scikit-image
+pip install Pillow==6.1 (specific version required)
+conda install torchvision -c pytorch
 
-This repository is the official implementation of our paper [SMOKE: Single-Stage Monocular 3D Object Detection via Keypoint Estimation](https://arxiv.org/pdf/2002.10111.pdf).
-For more details, please see our paper.
+#realated 
+##https://github.com/prclibo/kitti_eval
+##https://github.com/sshaoshuai/PointRCNN/tree/master/data/KITTI/ImageSets
 
-## Introduction
-SMOKE is a **real-time** monocular 3D object detector for autonomous driving. 
-The runtime on a single NVIDIA TITAN XP GPU is **~30ms**. 
-Part of the code comes from [CenterNet](https://github.com/xingyizhou/CenterNet), 
-[maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark),
-and [Detectron2](https://github.com/facebookresearch/detectron2).
+#Set up 
+#load the weight model from lacal path, change it in configs/smoke_gn_vector.yaml
+WEIGHT: "/home/carla/SMOKE/model_final.pth"
 
-The performance on KITTI 3D detection (3D/BEV) is as follows:
+#using carla to capture images and gps data
+#For example:
+cd /opt/carla-simulator/PythonAPI/examples/examples
+python measurement_data_1.py
+python measurement_data_2.py
+# the collcted data is stored in /home/carla/carla_data/
 
-|             |     Easy      |    Moderate    |     Hard     |
-|-------------|:-------------:|:--------------:|:------------:|
-| Car         | 14.17 / 21.08 | 9.88 / 15.13   | 8.63 / 12.91 | 
-| Pedestrian  | 5.16  / 6.22  | 3.24 / 4.05    | 2.53 / 3.38  | 
-| Cyclist     | 1.11  / 1.62  | 0.60 / 0.98    | 0.47 / 0.74  |
 
-The pretrained weights can be downloaded [here](https://drive.google.com/open?id=11VK8_HfR7t0wm-6dCNP5KS3Vh-Qm686-).
+# using python generate_location.py to generate grountruth and location difference file
+# mamunally set here, reason and challenges
+# gps and image frames are in different frequency (1 frame with ~20 gps)
+# the start and end time of each vehicle is not sychronized (the ground truth are not 100% accurate because of the time shift)
+# camera parameters are different between carla and existing trained models (camera location shift)
+# prediction results are not very accurate
 
-## Requirements
-All codes are tested under the following environment:
-*   Ubuntu 16.04
-*   Python 3.7
-*   Pytorch 1.3.1
-*   CUDA 10.0
+#prepare the images and test.txt file, follow the setting in generate_location.py
+python modify.py
 
-## Dataset
-We train and test our model on official [KITTI 3D Object Dataset](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d). 
-Please first download the dataset and organize it as following structure:
-```
-kitti
-│──training
-│    ├──calib 
-│    ├──label_2 
-│    ├──image_2
-│    └──ImageSets
-└──testing
-     ├──calib 
-     ├──image_2
-     └──ImageSets
-```  
-
-## Setup
-1. We use `conda` to manage the environment:
-```
-conda create -n SMOKE python=3.7
-```
-
-2. Clone this repo:
-```
-git clone https://github.com/lzccccc/SMOKE
-```
-
-3. Build codes:
-```
-python setup.py build develop
-```
-
-4. Link to dataset directory:
-```
-mkdir datasets
-ln -s /path_to_kitti_dataset datasets/kitti
-```
-
-## Getting started
-First check the config file under `configs/`. 
-
-We train the model on 4 GPUs with 32 batch size:
-```
-python tools/plain_train_net.py --num-gpus 4 --config-file "configs/smoke_gn_vector.yaml"
-```
-
-For single GPU training, simply run:
-```
-python tools/plain_train_net.py --config-file "configs/smoke_gn_vector.yaml"
-```
-
-We currently only support single GPU testing:
-```
+#predict results
 python tools/plain_train_net.py --eval-only --config-file "configs/smoke_gn_vector.yaml"
-```
 
-## Acknowledgement
-[CenterNet](https://github.com/xingyizhou/CenterNet)
+#get evaluation result
+python evaluate.py
 
-[maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark)
+#matlab toyota_map.m for visualization
 
-[Detectron2](https://github.com/facebookresearch/detectron2)
-
-
-## Citations
-Please cite our paper if you find SMOKE is helpful for your research.
-```
-@article{liu2020SMOKE,
-  title={{SMOKE}: Single-Stage Monocular 3D Object Detection via Keypoint Estimation},
-  author={Zechen Liu and Zizhang Wu and Roland T\'oth},
-  journal={arXiv preprint arXiv:2002.10111},
-  year={2020}
-}
-```

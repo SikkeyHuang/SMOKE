@@ -1,4 +1,4 @@
-# Result: time 232s frames 7518  32 FPS 30 ms per frame
+# Result: time 232s frames 7518;  32 FPS; 30 ms per frame
 # Accuracy: check the toyotamap.png
   
 # Note:

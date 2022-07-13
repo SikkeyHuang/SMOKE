@@ -30,11 +30,14 @@ the collcted data is stored in /home/carla/carla_data/
 
 
 # using python generate_location.py to generate grountruth and location difference file
-mamunally set here, reason and challenges
+# mamunally set here, reason and challenges:
 gps and image frames are in different frequency (1 frame with ~20 gps)
+
 the start and end time of each vehicle is not sychronized (the ground truth are not 100% accurate because of the time shift)
-camera parameters are different between carla and existing trained models (camera location shift)
-prediction results are not very accurate
+
+camera parameters are different between the carla environments and existing trained models (camera location shift)
+
+object detection results are not very accurate
 
 # prepare the images and test.txt file, follow the setting in generate_location.py
 python modify.py
